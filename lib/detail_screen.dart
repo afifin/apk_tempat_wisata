@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:waduk_seloromo_gembong/model/tourism_place.dart';
 
 class DetailScreen extends StatelessWidget {
-  var informationTextStyle = const TextStyle(fontFamily: 'Poppins');
+  final TourismPlace place;
+  const DetailScreen({Key? key, required this.place}) : super(key: key);
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -11,13 +13,40 @@ class DetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Image.asset(
-                'images/waduk.jpg',
+              Stack(
+                children: [
+                  Image.asset(
+                    place.imageAsset,
+                  ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const FavoriteButton(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 margin: const EdgeInsets.only(top: 16),
-                child: const Text(
-                  "Waduk Gembong",
+                child: Text(
+                  place.name,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 30,
@@ -37,8 +66,7 @@ class DetailScreen extends StatelessWidget {
                           height: 8,
                         ),
                         Text(
-                          'Open Everyday',
-                          style: informationTextStyle,
+                          place.openDays,
                         )
                       ],
                     ),
@@ -48,7 +76,7 @@ class DetailScreen extends StatelessWidget {
                         SizedBox(
                           height: 8,
                         ),
-                        Text('09:00-20:00', style: informationTextStyle)
+                        Text(place.openTime)
                       ],
                     ),
                     Column(
@@ -57,7 +85,7 @@ class DetailScreen extends StatelessWidget {
                         SizedBox(
                           height: 8,
                         ),
-                        Text('Rp 20.000', style: informationTextStyle)
+                        Text(place.ticketPrice)
                       ],
                     )
                   ],
@@ -66,47 +94,55 @@ class DetailScreen extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  'Waduk Gembong terletak di Desa Selorejo, Kecamatan Gembong, Kabupaten Pati, dengan jarak tempuh kurang lebih 10 km dari pusat kota. Waduk ini dibangun pada masa penjajahan Belanda (sekitar tahun 1930-1933), yang sampai saat ini masih bisa dinikmati, terutama untuk pengairan lahan yang ada di sekitarnya. Waduk ini mengairi lahan pertanian (sawah) seluas 4.959.00 hektar di Kecamatan Gembong, Wedarijaksa, Tlogowungu, dan Pati. Selain itu, warga setempat juga memanfaatkannya untuk budidaya air tawar yang dapat menambah perekonomian warga sekitar.',
+                  place.description,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, fontFamily: 'Poppins'),
                 ),
               ),
-              SizedBox(
+              Container(
                 height: 150,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  children: [
-                    Padding(
+                  children: place.imageUrls.map((url) {
+                    return Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                            'https://sikidang.com/wp-content/uploads/Harga-Tiket-Masuk-Waduk-Seloromo.jpg'),
+                        child: Image.network(url),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                            'https://ticmpu.id/wp-content/uploads/job-manager-uploads/company_logo/2021/03/selo1.jpg'),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                            'https://sikidang.com/wp-content/uploads/waduk-seloromo.jpg'),
-                      ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
               )
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class FavoriteButton extends StatefulWidget {
+  const FavoriteButton({super.key});
+
+  @override
+  State<FavoriteButton> createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<FavoriteButton> {
+  bool isFavorite = false;
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(
+        isFavorite ? Icons.favorite : Icons.favorite_border,
+        color: Colors.red,
+      ),
+      onPressed: () {
+        setState(() {
+          isFavorite = !isFavorite;
+        });
+      },
     );
   }
 }
